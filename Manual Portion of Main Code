@@ -1,6 +1,7 @@
-// constants won't change
 const int BUTTON1_PIN = 5; // Arduino pin connected to button's pin
 const int BUTTON2_PIN = 6;
+const int BUTTON3_PIN = 7;
+const int BUTTON4_PIN = 8;
 const int RELAY_PIN1  = 9; // Arduino pin connected to relay's pin
 const int RELAY_PIN2  = 10; // Arduino pin connected to relay's pin
 
@@ -10,11 +11,19 @@ int lastButton1State;    // the previous state of button
 int currentButton1State; // the current state of button
 int lastButton2State;
 int currentButton2State;
+int lastButton3State;
+int currentButton3State;
+int lastButton4State;
+int currentButton4State;
 
 void setup() {
   Serial.begin(9600);                // initialize serial
   pinMode(BUTTON1_PIN, INPUT_PULLUP); // set arduino pin to input pull-up mode
   pinMode(BUTTON2_PIN, INPUT_PULLUP);
+  pinMode(BUTTON3_PIN, INPUT_PULLUP);
+  pinMode(BUTTON4_PIN, INPUT_PULLUP);
+
+
   pinMode(RELAY_PIN1, OUTPUT);        // set arduino pin to output mode
   pinMode(RELAY_PIN2, OUTPUT);   
   
@@ -27,7 +36,12 @@ void loop() {
   currentButton1State = digitalRead(BUTTON1_PIN); // read new state
   lastButton2State    = currentButton2State;      // save the last state
   currentButton2State = digitalRead(BUTTON2_PIN); // read new state
-  
+  lastButton3State    = currentButton3State;      // save the last state
+  currentButton3State = digitalRead(BUTTON3_PIN); // read new state
+  lastButton4State    = currentButton4State;      // save the last state
+  currentButton4State = digitalRead(BUTTON4_PIN); // read new state
+
+// MANUAL CLOCKWISE (DOUBLE CLICK FOR OFF)
 
   if(lastButton1State == HIGH && currentButton1State == LOW) {
     Serial.println("CW");
@@ -39,6 +53,8 @@ void loop() {
     digitalWrite(RELAY_PIN1, relayState); 
   }
   
+// MANUAL COUNTERCLOCKWISE (DOUBLE CLICK FOR OFF)
+
   if(lastButton2State == HIGH && currentButton2State == LOW) {
     Serial.println("CCW");
 
@@ -47,5 +63,49 @@ void loop() {
 
     // control relay arccoding to the toggled state
     digitalWrite(RELAY_PIN2, relayState); 
+  }
+  
+ // AUTOMATIC FUNCTION #1
+ 
+  if(lastButton3State == HIGH && currentButton3State == LOW) {
+    Serial.println("Automatic Motion");
+    // toggle state of relay
+    relayState = !relayState;
+    // control relay according to the toggled state
+    digitalWrite(RELAY_PIN1, relayState); 
+    Serial.println("CCW");
+    delay(5000);
+    relayState = !relayState;
+    digitalWrite(RELAY_PIN1, relayState); 
+    Serial.println("Switching Directions...");
+    delay(500);
+    relayState = !relayState;
+    digitalWrite(RELAY_PIN2, relayState); 
+    Serial.println("CW");
+    delay(5000);
+    relayState = !relayState;
+    digitalWrite(RELAY_PIN2, relayState);
+  }
+  
+  // AUTOMATIC FUNCTION #2
+  
+  if(lastButton4State == HIGH && currentButton4State == LOW) {
+    Serial.println("Automatic Motion");
+    // toggle state of relay
+    relayState = !relayState;
+    // control relay according to the toggled state
+    digitalWrite(RELAY_PIN1, relayState); 
+    Serial.println("CCW");
+    delay(10000);
+    relayState = !relayState;
+    digitalWrite(RELAY_PIN1, relayState); 
+    Serial.println("Switching Directions...");
+    delay(1000);
+    relayState = !relayState;
+    digitalWrite(RELAY_PIN2, relayState); 
+    Serial.println("CW");
+    delay(2000);
+    relayState = !relayState;
+    digitalWrite(RELAY_PIN2, relayState);
   }
 }
